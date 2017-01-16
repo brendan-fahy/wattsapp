@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Watts App</string>
+    <string name="button_action_enable">ENABLE</string>
+    <string name="button_action_disable">DISABLE</string>
+    <string name="button_action_start_now">Start Now</string>
 </resources>
