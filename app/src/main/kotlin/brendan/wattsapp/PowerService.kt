@@ -49,14 +49,18 @@ class PowerService: JobService() {
 
     override fun onStopJob(jobParams: JobParameters): Boolean {
         Log.d(TAG, "onStopJob: ")
-        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        notificationManager.cancel(Constants.NOTIFICATION_ID)
+        clearNotification()
 
         /** "True to indicate to the JobManager whether you'd like to reschedule this job based on
          * the retry criteria provided at job creation-time. False to drop the job. Regardless of
          * value returned, your job must stop executing."
          */
         return true
+    }
+
+    private fun clearNotification() {
+        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        notificationManager.cancel(Constants.NOTIFICATION_ID)
     }
 }

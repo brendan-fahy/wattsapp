@@ -1,5 +1,6 @@
 package brendan.wattsapp
 
+import android.app.NotificationManager
 import android.app.job.JobInfo
 import android.app.job.JobScheduler
 import android.content.*
@@ -42,6 +43,10 @@ class PowerConnectionReceiver: BroadcastReceiver() {
         } else if (hasBeenDisconnected) {
             Log.d(TAG, "onReceive: device has been disconnected, cancelling all jobs.")
             jobScheduler.cancelAll()
+
+            // FIXME this is a pretty hacky way of getting the job done :(
+            (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+                    .cancel(Constants.NOTIFICATION_ID)
         }
         Log.d(TAG, "onReceive: EXTRA_STATUS is $status")
     }
