@@ -1,9 +1,13 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
 
     defaultConfig {
         applicationId "brendan.wattsapp"
@@ -21,7 +25,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile "org.jetbrains.kotlin:kotlin-stdlib:1.0.6"
+
     compile 'com.google.android.support:wearable:2.0.0-beta1'
+
     compile 'com.google.android.gms:play-services-wearable:10.0.1'
 }
