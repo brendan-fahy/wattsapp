@@ -1,11 +1,10 @@
 package brendan.wattsapp
 
+import android.app.AlarmManager
 import android.app.NotificationManager
-import android.app.job.JobInfo
-import android.app.job.JobScheduler
+import android.app.PendingIntent
 import android.content.*
 import android.os.BatteryManager
-import android.os.Build
 import android.preference.PreferenceManager
 import android.util.Log
 import brendan.wattsapp.Constants.JOB_ID
@@ -14,8 +13,6 @@ import brendan.wattsapp.Constants.JOB_INTERVAL
 class PowerConnectionReceiver: BroadcastReceiver() {
 
     val TAG = "PowerConnectionReceiver"
-
-    private lateinit var jobScheduler: JobScheduler
 
     override fun onReceive(context: Context, intent: Intent) {
 
@@ -28,43 +25,40 @@ class PowerConnectionReceiver: BroadcastReceiver() {
             return
         }
 
-        jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+        val alarmIntent = Intent(context, AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(context, JOB_ID, alarmIntent, 0)
 
         val intentFilter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
         val batteryStatus = context.registerReceiver(null, intentFilter)
-        val status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
 
-        val isCharging = ((status == BatteryManager.BATTERY_STATUS_CHARGING) ||
-                status == BatteryManager.BATTERY_STATUS_FULL)
-        val isUnknown = (status == BatteryManager.BATTERY_STATUS_UNKNOWN)
-        val hasBeenDisconnected = (status == BatteryManager.BATTERY_STATUS_DISCHARGING)
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        if (isCharging || isUnknown) {
+        if (batteryStatus.shouldShowNotification()) {
             Log.d(TAG, "onReceive: device is charging or unknown, scheduling job.")
-            jobScheduler.schedule(jobInfo(context))
-        } else if (hasBeenDisconnected) {
+
+            alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, JOB_INTERVAL, JOB_INTERVAL,
+                    pendingIntent)
+        } else if (batteryStatus.shouldClearNotification()) {
             Log.d(TAG, "onReceive: device has been disconnected, cancelling all jobs.")
-            jobScheduler.cancelAll()
+
+            alarmManager.cancel(pendingIntent)
 
             // FIXME this is a pretty hacky way of getting the job done :(
             (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
                     .cancel(Constants.NOTIFICATION_ID)
         }
-        Log.d(TAG, "onReceive: EXTRA_STATUS is $status")
     }
 
-    private fun jobInfo(context: Context): JobInfo {
-        val serviceName = ComponentName(context, PowerService::class.java)
-        val jobInfoBuilder = JobInfo.Builder(JOB_ID, serviceName)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_NONE)
-                .setRequiresCharging(true)
+    fun Intent.shouldShowNotification(): Boolean {
+        val status = getIntExtra(BatteryManager.EXTRA_STATUS, -1)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            jobInfoBuilder.setPeriodic(JOB_INTERVAL, Constants.JOB_FLEX)
-        } else {
-            jobInfoBuilder.setPeriodic(JOB_INTERVAL)
-        }
+        return status == BatteryManager.BATTERY_STATUS_CHARGING
+                || status == BatteryManager.BATTERY_STATUS_FULL
+                || status == BatteryManager.BATTERY_STATUS_UNKNOWN
+    }
 
-        return jobInfoBuilder.build()
+    fun Intent.shouldClearNotification(): Boolean {
+        return (getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+                == BatteryManager.BATTERY_STATUS_DISCHARGING)
     }
 }
