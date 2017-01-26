@@ -10,7 +10,6 @@ import android.content.IntentFilter
 import android.os.BatteryManager
 import android.support.v4.app.NotificationCompat
 import android.util.Log
-import java.util.*
 
 class PowerService: JobService() {
 
@@ -40,9 +39,6 @@ class PowerService: JobService() {
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText("Phone is $level% charged.")
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setOngoing(false)
-                .setShowWhen(true)
-                .setWhen(Calendar.getInstance().timeInMillis)
                 .setOnlyAlertOnce(true)
                 .build()
     }

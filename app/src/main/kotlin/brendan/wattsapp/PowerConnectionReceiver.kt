@@ -8,6 +8,8 @@ import android.os.BatteryManager
 import android.os.Build
 import android.preference.PreferenceManager
 import android.util.Log
+import brendan.wattsapp.Constants.JOB_ID
+import brendan.wattsapp.Constants.JOB_INTERVAL
 
 class PowerConnectionReceiver: BroadcastReceiver() {
 
@@ -53,14 +55,14 @@ class PowerConnectionReceiver: BroadcastReceiver() {
 
     private fun jobInfo(context: Context): JobInfo {
         val serviceName = ComponentName(context, PowerService::class.java)
-        val jobInfoBuilder = JobInfo.Builder(Constants.JOB_ID, serviceName)
+        val jobInfoBuilder = JobInfo.Builder(JOB_ID, serviceName)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_NONE)
                 .setRequiresCharging(true)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            jobInfoBuilder.setPeriodic(Constants.JOB_INTERVAL, Constants.JOB_FLEX)
+            jobInfoBuilder.setPeriodic(JOB_INTERVAL, Constants.JOB_FLEX)
         } else {
-            jobInfoBuilder.setPeriodic(Constants.JOB_INTERVAL)
+            jobInfoBuilder.setPeriodic(JOB_INTERVAL)
         }
 
         return jobInfoBuilder.build()

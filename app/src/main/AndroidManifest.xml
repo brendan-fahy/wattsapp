@@ -26,7 +26,7 @@
 
         <service android:name=".PowerService"
             android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="false"/>
+            />
 
     </application>
 
