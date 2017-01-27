@@ -14,6 +14,4 @@ object Constants {
     private val ONE_MINUTE = ONE_SECOND * 60L
 
     val JOB_INTERVAL = ONE_MINUTE
-
-    val JOB_FLEX = ONE_SECOND
 }

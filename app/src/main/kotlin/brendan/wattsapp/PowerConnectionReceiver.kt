@@ -3,7 +3,10 @@ package brendan.wattsapp
 import android.app.AlarmManager
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.BatteryManager
 import android.preference.PreferenceManager
 import android.util.Log
@@ -18,6 +21,7 @@ class PowerConnectionReceiver: BroadcastReceiver() {
 
         Log.d(TAG, "onReceive: ")
 
+        // TODO Completely redo (or actually do) configurability.
         // No-op if disabled in sharedprefs
         if (!PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(Constants.SHARED_PREF_ENABLED, false)) {
@@ -36,7 +40,7 @@ class PowerConnectionReceiver: BroadcastReceiver() {
         if (batteryStatus.shouldShowNotification()) {
             Log.d(TAG, "onReceive: device is charging or unknown, scheduling job.")
 
-            alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, JOB_INTERVAL, JOB_INTERVAL,
+            alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, 0, JOB_INTERVAL,
                     pendingIntent)
         } else if (batteryStatus.shouldClearNotification()) {
             Log.d(TAG, "onReceive: device has been disconnected, cancelling all jobs.")
