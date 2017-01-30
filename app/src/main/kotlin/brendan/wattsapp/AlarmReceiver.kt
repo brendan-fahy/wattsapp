@@ -34,7 +34,7 @@ class AlarmReceiver: BroadcastReceiver() {
         return NotificationCompat.Builder(context)
                 .setContentTitle(context.getString(R.string.app_name))
                 .setContentText("Phone is $level% charged.")
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.mipmap.ic_notification)
                 .setOnlyAlertOnce(true)
                 .build()
     }
