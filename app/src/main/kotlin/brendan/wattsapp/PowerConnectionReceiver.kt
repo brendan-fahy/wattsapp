@@ -1,14 +1,12 @@
 package brendan.wattsapp
 
 import android.app.AlarmManager
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
-import android.preference.PreferenceManager
 import android.util.Log
 import brendan.wattsapp.Constants.JOB_ID
 import brendan.wattsapp.Constants.JOB_INTERVAL
@@ -19,17 +17,7 @@ class PowerConnectionReceiver: BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
 
-        Log.d(TAG, "onReceive: ")
-
-        // TODO Completely redo (or actually do) configurability.
-        // No-op if disabled in sharedprefs
-        if (!PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(Constants.SHARED_PREF_ENABLED, false)) {
-            Log.d(TAG, "onReceive: disabled in SharedPreferences, returning early.")
-            return
-        }
-
-        val alarmIntent = Intent(context, AlarmReceiver::class.java)
+        val alarmIntent = Intent(context, ShowAlarmReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(context, JOB_ID, alarmIntent, 0)
 
         val intentFilter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
@@ -38,7 +26,7 @@ class PowerConnectionReceiver: BroadcastReceiver() {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         if (batteryStatus.shouldShowNotification()) {
-            Log.d(TAG, "onReceive: device is charging or unknown, scheduling job.")
+            Log.d(TAG, "onReceive: device is charging, scheduling job.")
 
             alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, 0, JOB_INTERVAL,
                     pendingIntent)
@@ -46,10 +34,8 @@ class PowerConnectionReceiver: BroadcastReceiver() {
             Log.d(TAG, "onReceive: device has been disconnected, cancelling all jobs.")
 
             alarmManager.cancel(pendingIntent)
-
-            // FIXME this is a pretty hacky way of getting the job done :(
-            (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
-                    .cancel(Constants.NOTIFICATION_ID)
+            (context.applicationContext.getSystemService(SERVICE_NOTIFICATION_HANDLER) as NotificationHandler)
+                    .cancelNotification()
         }
     }
 
@@ -58,11 +44,12 @@ class PowerConnectionReceiver: BroadcastReceiver() {
 
         return status == BatteryManager.BATTERY_STATUS_CHARGING
                 || status == BatteryManager.BATTERY_STATUS_FULL
-                || status == BatteryManager.BATTERY_STATUS_UNKNOWN
     }
 
     fun Intent.shouldClearNotification(): Boolean {
-        return (getIntExtra(BatteryManager.EXTRA_STATUS, -1)
-                == BatteryManager.BATTERY_STATUS_DISCHARGING)
+        val status = getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+
+        return status == BatteryManager.BATTERY_STATUS_DISCHARGING
+                || status == BatteryManager.BATTERY_STATUS_UNKNOWN
     }
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="@string/prefs_enable_key"
+        android:title="@string/setting_enable"
+        android:summary="@string/setting_enable_summary"
+        android:defaultValue="true" />
+
+    <CheckBoxPreference
+        android:key="@string/prefs_alert_on_full_key"
+        android:title="@string/setting_notify_on_full"
+        android:defaultValue="false"
+        />
+
+</PreferenceScreen>

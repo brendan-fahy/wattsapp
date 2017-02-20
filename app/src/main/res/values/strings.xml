@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">Watts App</string>
-    <string name="button_action_enable">ENABLE</string>
-    <string name="button_action_disable">DISABLE</string>
-    <string name="button_action_start_now">Start Now</string>
+    <string name="button_action_start_now">Show Notification Now</string>
+
+    <string name="setting_enable">Enable Notifications</string>
+    <string name="setting_enable_summary">Allow Watts App to show notifications when phone is charging</string>
+    <string name="setting_notify_on_full">Vibrate when battery is full</string>
+
+    <string name="prefs_enable_key">PREF_ENABLED</string>
+    <string name="prefs_alert_on_full_key">PREF_ALERT_ON_FULL</string>
+
 </resources>
