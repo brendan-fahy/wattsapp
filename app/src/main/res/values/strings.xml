@@ -2,6 +2,8 @@
     <string name="app_name">Watts App</string>
     <string name="button_action_start_now">Show Notification Now</string>
 
+    <string name="main_activity_summary">Watts App shows a silent notification when your phone is charging, to let you know what level the battery is at. This is intended for Android Wear users, so can see how charged your phone is just by looking at your watch. </string>
+
     <string name="setting_enable">Enable Notifications</string>
     <string name="setting_enable_summary">Allow Watts App to show notifications when phone is charging</string>
     <string name="setting_notify_on_full">Vibrate when battery is full</string>
